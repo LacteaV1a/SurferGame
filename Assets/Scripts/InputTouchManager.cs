@@ -1,14 +1,12 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-
-public class SwipeDetection : MonoBehaviour
+public class InputTouchManager : InputManager
 {
     [SerializeField] private float _minimumDistance = 0.2f;
     [SerializeField] private float _maximumTime = 1f;
     [SerializeField, Range(0,1)] private float _directionThreshold = 0.9f;
-
-    private InputManager _inputManager;
 
     private Vector2 _startPostion;
     private float _startTime;
@@ -16,33 +14,26 @@ public class SwipeDetection : MonoBehaviour
     private Vector2 _endPosition;
     private float _endTime;
 
-    public delegate void Swipe(Vector2 direction);
-    public event Swipe OnSwiped;
-
-
-    private void Awake()
+    private void Start()
     {
-        _inputManager = InputManager.Instance;
+        _playerControls.Touch.PrimaryContanct.started += StartTouchPrimary;
+        _playerControls.Touch.PrimaryContanct.canceled += EndTouchPrimary;
     }
 
-
-    private void OnEnable()
+    private void StartTouchPrimary(InputAction.CallbackContext context)
     {
-        _inputManager.OnStartTouch += SwipeStart;
-        _inputManager.OnEndTouch += SwipeEnd;
+        SwipeStart(_playerControls.Touch.PrimaryPosition.ReadValue<Vector2>(), (float)context.time);
     }
 
-    private void OnDisable()
+    private void EndTouchPrimary(InputAction.CallbackContext context)
     {
-        _inputManager.OnStartTouch -= SwipeStart;
-        _inputManager.OnEndTouch -= SwipeEnd;
+        SwipeEnd(_playerControls.Touch.PrimaryPosition.ReadValue<Vector2>(), (float)context.startTime);
     }
 
     private void SwipeStart(Vector2 position, float time)
     {
         _startPostion = position;
         _startTime = time;
-
     }
      
     private void SwipeEnd(Vector2 position, float time)
@@ -52,8 +43,6 @@ public class SwipeDetection : MonoBehaviour
 
         DetectSwipe();
     }
-
-
 
     private void DetectSwipe()
     {
@@ -73,24 +62,24 @@ public class SwipeDetection : MonoBehaviour
         if(Vector2.Dot(Vector2.up, direction) > _directionThreshold)
         {
             Debug.Log("Swipe Up");
-            OnSwiped?.Invoke(Vector2.up);
+            PlayerInputEvent?.Invoke(Vector2.up);
         }
         else if (Vector2.Dot(Vector2.down, direction) > _directionThreshold)
         {
             Debug.Log("Swipe Down");
-            OnSwiped?.Invoke(Vector2.down);
+            PlayerInputEvent?.Invoke(Vector2.down);
 
         }
         else if (Vector2.Dot(Vector2.right, direction) > _directionThreshold)
         {
             Debug.Log("Swipe Right");
-            OnSwiped?.Invoke(Vector2.right);
+            PlayerInputEvent?.Invoke(Vector2.right);
 
         }
         else if (Vector2.Dot(Vector2.left, direction) > _directionThreshold)
         {
             Debug.Log("Swipe Left");
-            OnSwiped?.Invoke(Vector2.left);
+            PlayerInputEvent?.Invoke(Vector2.left);
         }
     }
 

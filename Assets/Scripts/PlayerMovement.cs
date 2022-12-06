@@ -22,7 +22,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _distanceRaycast = 0.1f;
     [SerializeField] private LayerMask _obstacleMask;
 
-    private SwipeDetection _swipeDetection;
+    private InputManager _swipeDetection;
     private bool _isGrounded;
 
     private Vector2[] _sidesHorizont2D = new Vector2[] {Vector2.left, Vector2.right };
@@ -41,15 +41,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
-        _swipeDetection = FindObjectOfType<SwipeDetection>();
+        _swipeDetection = InputTouchManager.Instance;
     }
 
     private void OnEnable()
     {
-        _swipeDetection.OnSwiped += OnSwiped;
+        _swipeDetection.PlayerInputEvent += OnPlayerInput;
     }
 
-    private void OnSwiped(Vector2 direction)
+    private void OnPlayerInput(Vector2 direction)
     {
         if(direction == Vector2.left || direction == Vector2.right)
         {
@@ -159,7 +159,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnDisable()
     {
-        _swipeDetection.OnSwiped -= OnSwiped;
+        _swipeDetection.PlayerInputEvent -= OnPlayerInput;
     }
 
 }

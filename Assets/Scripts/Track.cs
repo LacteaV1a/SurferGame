@@ -5,7 +5,7 @@ using UnityEditor;
 #endif
 using UnityEngine;
 
-public class Track : MonoBehaviour
+public abstract class Track : MonoBehaviour
 {
     [SerializeField] private int _roadCount;
     [SerializeField] private float _roadSpace;
@@ -24,14 +24,14 @@ public class Track : MonoBehaviour
 
     public IEnumerable<Road> Roads => _roads;
 
-    public void Initialize()
+    public virtual void Initialize()
     {
         _roads = new Road[_roadCount];
 
         for (int i = 0; i < _roadCount; i++)
         {
             var startPos = new Vector3(((i * _roadSpace) - _widthTrack / 2f) + _roadOffset, 0, 0);
-            var endPos = new Vector3(((i * _roadSpace) - _widthTrack / 2f) + _roadOffset, 0, _lengthTrack);
+            var endPos = new Vector3(startPos.x, 0, _lengthTrack);
 
             var road = new GameObject(i + " Road").AddComponent<Road>();
             road.transform.SetParent(transform);
