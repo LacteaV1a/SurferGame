@@ -35,6 +35,8 @@ public class PlayerMovement : MonoBehaviour
     public event Action OnJumpedStart;
     public event Action OnJumpedEnd;
 
+    public event Action<Vector2> MoveHorizont;
+
     public bool IsGrounded => _isGrounded;
     public float MoveSpeed { get => _moveSpeed; set { _moveSpeed = value; } }
     public bool CanMove { get; set; } = true;
@@ -153,8 +155,9 @@ public class PlayerMovement : MonoBehaviour
 
 
         _moveTween = _player.transform
-            .DOMoveX(_player.transform.position.x + direction.x * _moveHorizontalDistance, 0.3f)
+            .DOMoveX(_player.transform.position.x + direction.x * _moveHorizontalDistance, 0.6f)
             .SetEase(Ease.InOutCirc);
+        MoveHorizont?.Invoke(direction);
     }
 
     private void OnDisable()

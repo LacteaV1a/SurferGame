@@ -11,6 +11,7 @@ public class TrackGenerator : MonoBehaviour
     [SerializeField] private float _offsetDestroyTrack;
     [SerializeField] private Vector3 _startPos;
     [SerializeField] private Transform _player;
+    [SerializeField] private LevelTrackConfiguration _config;
 
     private Track[] _initRoads;
     private int _trackCounter = 0;
@@ -22,6 +23,7 @@ public class TrackGenerator : MonoBehaviour
 
     private void Start()
     {
+        _config.Inittialize();
         _lenghtTrack = _prefabTrack.GetComponent<Track>().Length;
         _initRoads = new Track[_countInitTrack];
     }
@@ -32,28 +34,8 @@ public class TrackGenerator : MonoBehaviour
         var triggerPosZ = (_startPos.z + _lenghtTrack * (_trackCounter - _countInitTrack + 1)) + _offsetDestroyTrack;
         if (_player.position.z > triggerPosZ || _trackCounter < _countInitTrack)
         {
-            var curPos = new Vector3(_startPos.x, _startPos.y, _startPos.z + (_trackCounter * _lenghtTrack));
-            var trackGO = Instantiate(_prefabTrack, curPos, Quaternion.identity);
 
-            trackGO.name = trackGO.name + _trackCounter;
-
-            var track = trackGO.GetComponent<Track>();
-            track.Initialize();
-            OnTrackGenerated?.Invoke(track);
-
-            if (_trackCounter < _countInitTrack)
-            {
-                _initRoads[_trackCounter] = track;
-            }
-            else
-            {
-                Destroy(_initRoads[0].gameObject);
-                ShiftLeft(_initRoads);
-                _initRoads[^1] = track;
-
-            }
-
-            _trackCounter++;
+            CreateTrack(_prefabTrack.GetComponent<Track>());
         }
 
         var triggerPosZWithoutOffset = triggerPosZ - _offsetDestroyTrack;
@@ -63,6 +45,33 @@ public class TrackGenerator : MonoBehaviour
             OnCurrentTrackChanged?.Invoke(_currentTrack);
         }
 
+    }
+
+
+    public void CreateTrack(Track track)
+    {
+        var curPos = new Vector3(_startPos.x, _startPos.y, _startPos.z + (_trackCounter * _lenghtTrack));
+        track = Instantiate(track, curPos, Quaternion.identity);
+
+        track.name = track.name + _trackCounter;
+
+        //var track = trackGO.GetComponent<Track>();
+        track.Initialize();
+        OnTrackGenerated?.Invoke(track);
+
+        if (_trackCounter < _countInitTrack)
+        {
+            _initRoads[_trackCounter] = track;
+        }
+        else
+        {
+            Destroy(_initRoads[0].gameObject);
+            ShiftLeft(_initRoads);
+            _initRoads[^1] = track;
+
+        }
+
+        _trackCounter++;
     }
 
     private void ShiftLeft(Track[] array)

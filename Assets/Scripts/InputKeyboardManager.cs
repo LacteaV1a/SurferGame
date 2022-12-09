@@ -16,7 +16,6 @@ public class InputKeyboardManager : InputManager
 
     private void UpStarted(UnityEngine.InputSystem.InputAction.CallbackContext obj)
     {
-        Debug.Log("123");
         PlayerInputEvent?.Invoke(Vector2.up);
     }
 

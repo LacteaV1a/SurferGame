@@ -5,7 +5,7 @@ using UnityEditor;
 #endif
 using UnityEngine;
 
-public abstract class Track : MonoBehaviour
+public abstract class Track : MonoBehaviour, ITItemLevelTrackConfiguration
 {
     [SerializeField] private int _roadCount;
     [SerializeField] private float _roadSpace;
@@ -23,6 +23,8 @@ public abstract class Track : MonoBehaviour
     public float RoadSpace => _roadSpace;
 
     public IEnumerable<Road> Roads => _roads;
+
+    public int ID { get; set; } = 0;
 
     public virtual void Initialize()
     {
